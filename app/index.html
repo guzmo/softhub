@@ -24,7 +24,7 @@
         <h1 class="title">Ionic Blank Starter</h1>
       </ion-header-bar>
       <ion-content>
-          <input type="file" id="filePicker"/>
+          <input type="file" id="filePicker" ng-disabled="disabled" ng-model="file"/>
           <button id="authorizeButton" ng-click="checkAuth()">Logga in</button>
       </ion-content>
     </ion-pane>

@@ -11,9 +11,12 @@ angular.module('Softhub', ['ionic', 'config', 'angular-google-gapi'])
 
     $rootScope.CLIENT_APK = 'AIzaSyAbAFrNtfUMaIs_AvBGSM2Zd2aQz4kkZvQ';
     $rootScope.CLIENT_ID = '816277150372-krd6kau1lq9t6k3njgl7o8sl6om4bvbs.apps.googleusercontent.com';
-    $rootScope.SCOPES = 'https://www.googleapis.com/auth/drive';
+    $rootScope.SCOPES = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/drive';
+
+    GApi.load('drive', 'v2');
 
     GAuth.setClient($rootScope.CLIENT_ID);
+    GAuth.setScopes($rootScope.SCOPES);
 
     //GApi.load($rootScope.CLIENT_APK, 'v3', $rootScope.SCOPES);
 
@@ -31,28 +34,37 @@ angular.module('Softhub', ['ionic', 'config', 'angular-google-gapi'])
 })
 .controller('main', ['$scope', '$timeout', 'GAuth', 'GApi', function($scope, $timeout, GAuth, GApi) {
 
-
-
-    /**
+      $scope.file = {};
+      $scope.disabled = true;
+      /**
        * Check if the current user has authorized the application.
        */
       $scope.checkAuth = function() {
         GAuth.login().then(function(){
-              //$state.go('webapp.home'); // action after the user have validated that
-                          // your application can access their Google account.
-                          console.log("login");
+                // your application can access their Google account.
+                console.log("login");
+                $scope.disabled = false;
             }, function() {
                 console.log('login fail');
             });
-      }
+      };
 
+      var filePicker = document.getElementById('filePicker');
+      filePicker.onchange = uploadFile
       /**
        * Start the file upload.
        *
        * @param {Object} evt Arguments from the file selector.
        */
       function uploadFile(evt) {
-
-      }
+        console.log("asdasdasdasd");
+          GApi.executeAuth('drive', 'files.list').then( function(resp) {
+              console.log("ASASD");
+              console.log(resp);
+              $scope.value = resp;
+          }, function() {
+              console.log("error :(");
+          });
+      };
 
 }]);
