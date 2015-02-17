@@ -13,9 +13,9 @@ angular.module('Softhub', ['ionic', 'config', 'angular-google-gapi'])
     $rootScope.CLIENT_ID = '816277150372-krd6kau1lq9t6k3njgl7o8sl6om4bvbs.apps.googleusercontent.com';
     $rootScope.SCOPES = 'https://www.googleapis.com/auth/drive';
 
-    GAuth.setClient($rootScope.CLIENT);
+    GAuth.setClient($rootScope.CLIENT_ID);
 
-    GApi.load($rootScope.SCOPES, 'v3', $rootScope.SCOPES);
+    //GApi.load($rootScope.CLIENT_APK, 'v3', $rootScope.SCOPES);
 
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -29,7 +29,7 @@ angular.module('Softhub', ['ionic', 'config', 'angular-google-gapi'])
     }
   });
 })
-.controller('main', ['$scope', '$timeout', 'GAuth', 'GApi', function($scope, $timeout, GAuth, GApii) {
+.controller('main', ['$scope', '$timeout', 'GAuth', 'GApi', function($scope, $timeout, GAuth, GApi) {
 
 
 
@@ -37,16 +37,13 @@ angular.module('Softhub', ['ionic', 'config', 'angular-google-gapi'])
        * Check if the current user has authorized the application.
        */
       $scope.checkAuth = function() {
-        GAuth.checkAuth().then(
-            function () {
-              console.log("ASDASDASDASD");
-               // $state.go('webapp.home'); // an example of action if it's possible to
-                              // authenticate user at startup of the application
-            },
-            function() {
-                console.log("FAILED");                      // authenticate user at startup of the application
-            }
-        );
+        GAuth.login().then(function(){
+              //$state.go('webapp.home'); // action after the user have validated that
+                          // your application can access their Google account.
+                          console.log("login");
+            }, function() {
+                console.log('login fail');
+            });
       }
 
       /**
