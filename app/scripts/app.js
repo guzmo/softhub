@@ -18,8 +18,6 @@ angular.module('Softhub', ['ionic', 'config', 'angular-google-gapi'])
     GAuth.setClient($rootScope.CLIENT_ID);
     GAuth.setScopes($rootScope.SCOPES);
 
-    //GApi.load($rootScope.CLIENT_APK, 'v3', $rootScope.SCOPES);
-
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -58,12 +56,60 @@ angular.module('Softhub', ['ionic', 'config', 'angular-google-gapi'])
        * @param {Object} evt Arguments from the file selector.
        */
       function uploadFile(evt) {
+          console.log(evt.target.files[0]);
+          var fileData = evt.target.files[0];
+          var boundary = '-------314159265358979323846';
+          var delimiter = "\r\n--" + boundary + "\r\n";
+          var close_delim = "\r\n--" + boundary + "--";
+
+          var reader = new FileReader();
+          reader.readAsBinaryString(fileData);
+          reader.onload = function(e) {
+            var contentType = fileData.type || 'application/octet-stream';
+            var metadata = {
+              'title': fileData.name,
+              'mimeType': contentType
+            }
+
+          var base64Data = btoa(reader.result);
+          var multipartRequestBody =
+              delimiter +
+              'Content-Type: application/json\r\n\r\n' +
+              JSON.stringify(metadata) +
+              delimiter +
+              'Content-Type: ' + contentType + '\r\n' +
+              'Content-Transfer-Encoding: base64\r\n' +
+              '\r\n' +
+              base64Data +
+              close_delim;
+
+          var request = {
+              'path': '/upload/drive/v2/files',
+              'method': 'POST',
+              'params': {'uploadType': 'multipart'},
+              'headers': {
+                'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+              },
+              'body': multipartRequestBody
+            };
+
+            GApi.executeAuth('drive', 'files.insert', request).then( function(resp) {
+              console.log(resp);
+              $scope.value = resp;
+            }, function() {
+                console.log("error");
+            });
+        }
+
+      };
+
+      $scope.getAllFiles = function() {
           GApi.executeAuth('drive', 'files.list').then( function(resp) {
               console.log(resp);
               $scope.value = resp;
           }, function() {
               console.log("error");
           });
-      };
+      }
 
 }]);
