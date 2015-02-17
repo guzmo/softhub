@@ -50,20 +50,19 @@ angular.module('Softhub', ['ionic', 'config', 'angular-google-gapi'])
       };
 
       var filePicker = document.getElementById('filePicker');
-      filePicker.onchange = uploadFile
+      filePicker.onchange = uploadFile;
+
       /**
        * Start the file upload.
        *
        * @param {Object} evt Arguments from the file selector.
        */
       function uploadFile(evt) {
-        console.log("asdasdasdasd");
           GApi.executeAuth('drive', 'files.list').then( function(resp) {
-              console.log("ASASD");
               console.log(resp);
               $scope.value = resp;
           }, function() {
-              console.log("error :(");
+              console.log("error");
           });
       };
 
